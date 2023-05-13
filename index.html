@@ -12,6 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Carter+One&display=swap" rel="stylesheet">
+    <script id="countryCodes" src="https://gist.github.com/keeguon/2310008.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <div class="container header p-5 my-4">
@@ -21,16 +22,35 @@
             <div class="col-3"></div>
         </div>
     </div>
-    <div class="container-fluid min-vh-80 row gx-5 mx-4">
-        <div class="col-3 bg-info rounded-4  opacity-75">
-            <nav class="navbar bg-body-tertiary col">
-                <div class="container-fluid">
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-success" type="submit">Search</button>
-                </form>
-                </div>
-            </nav>
+    <div class="container-fluid min-vh-80 row g-5 m-4">
+        <div class="col-3 bg-info rounded-4  opacity-75 p-3 border border-5 border-opacity-10">
+            <div class="m-2">
+                <nav class="navbar bg-body-tertiary col">
+                    <div class="container-fluid">
+                    <form class="row g-2" role="search" onsubmit="processForm()">
+                        <div class="input-group row mt-2">
+                            <!-- <label class="input-group-text" for="inputGroupSelect01">Country</label> -->
+                            <select class="form-select" id="inputGroupSelect01"><!--on change function here -->
+                              <option selected>Country...</option>
+                              <option value="1">One</option>
+                              <option value="2">Two</option>
+                              <option value="3">Three</option>
+                            </select>
+                            <select class="form-select" id="inputGroupSelect01">
+                                <option selected>State...</option>
+                                <option value="1">One</option>
+                                <option value="2">Two</option>
+                                <option value="3">Three</option>
+                            </select>
+                        </div>
+                        <input class="form-control me-2 col-12" type="search" placeholder="Enter City Name" required aria-label="Search">
+                        <button class="btn btn-success" type="submit">Search</button>
+                    <!--  -->
+                        
+                    </form>
+                    </div>
+                </nav>
+            </div>
             <ul class="list-group">
                 <li class="list-group-item">An item</li>
                 <li class="list-group-item">A second item</li>
@@ -39,7 +59,7 @@
                 <li class="list-group-item">And a fifth one</li>
             </ul>
         </div>
-        <div class="col-6 bg-info rounded-4  opacity-75">
+        <div class="col-6 bg-info rounded-4  opacity-75 p-3 border border-5 border-opacity-10">
             <table class="table col-6" id="forecast">
                 <thead>
                 <tr id="cityState">
@@ -81,7 +101,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="col-3 bg-info rounded-4 opacity-75">
+        <div class="col-3 bg-info rounded-4 opacity-75 p-3 border border-5 border-opacity-10">
         <div class="card col-3" style="width: 18rem;">
                 <img src="./assets/images/sunny_sky_1.png" class="card-img-top" alt="...">
                 <div class="card-body">
