@@ -21,11 +21,11 @@
             <div class="col-3"></div>
         </div>
     </div>
-    <div class="container-fluid min-vh-60 row gx-5 mx-4">
+    <div class="container-fluid min-vh-80 row gx-5 mx-4">
         <div class="col-3 bg-info rounded-4  opacity-75">
-            <nav class="navbar bg-body-tertiary col-3">
+            <nav class="navbar bg-body-tertiary col">
                 <div class="container-fluid">
-                <form class="d-flex justify-content-evenly" role="search">
+                <form class="d-flex" role="search">
                     <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                     <button class="btn btn-success" type="submit">Search</button>
                 </form>
@@ -42,32 +42,42 @@
         <div class="col-6 bg-info rounded-4  opacity-75">
             <table class="table col-6" id="forecast">
                 <thead>
-                <tr>
-                    <th scope="col">Day-1</th>
-                    <th scope="col">Day-2</th>
-                    <th scope="col">Day-3</th>
+                <tr id="cityState">
+                    <!-- <th scope="col" id="city"></th>
+                    <th scope="col" id="state"></th> -->
+                    <!-- <th scope="col">Day-3</th>
                     <th scope="col">Day-4</th>
-                    <th scope="col">Day-5</th>
+                    <th scope="col">Day-5</th> -->
                 </tr>
                 </thead>
                 <tbody>
-                <tr id="tableData">
+                <tr id="weatherDate">
                     <!-- <th scope="row">1</th>
                     <td>Mark</td>
                     <td>Otto</td>
                     <td>@mdo</td> -->
                 </tr>
-                <!-- <tr>
-                    <th scope="row">2</th>
+                <tr id="weatherTemp">
+                    <!-- <th scope="row">2</th>
                     <td>Jacob</td>
                     <td>Thornton</td>
-                    <td>@fat</td>
+                    <td>@fat</td> -->
                 </tr>
-                <tr>
-                    <th scope="row">3</th>
+                <tr id="weatherHumid">
+                    <!-- <th scope="row">3</th>
                     <td colspan="2">Larry the Bird</td>
-                    <td>@twitter</td>
-                </tr> -->
+                    <td>@twitter</td> -->
+                </tr>
+                <tr id="weatherWindSpeed">
+                    <!-- <th scope="row">3</th>
+                    <td colspan="2">Larry the Bird</td>
+                    <td>@twitter</td> -->
+                </tr>
+                <tr id="weatherCondition">
+                    <!-- <th scope="row">3</th>
+                    <td colspan="2">Larry the Bird</td>
+                    <td>@twitter</td> -->
+                </tr>
                 </tbody>
             </table>
         </div>
