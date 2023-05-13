@@ -1,3 +1,7 @@
+*{
+    box-sizing: border-box;
+}
+
 body{
     background-image: url(https://cdn.midjourney.com/033d5209-a7bd-414a-89dd-ea18064d333a/0_2.png);
     min-height: 100dvh;
