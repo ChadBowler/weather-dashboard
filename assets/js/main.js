@@ -98,10 +98,15 @@ async function getLocation(countryChoice, cityChoice, stateChoice){
   function displayLocation(data){
     const cityState = document.getElementById('cityState');
     let place = document.createElement('td');
+    place.setAttribute('id', 'place');
     while (cityState.hasChildNodes()) {
       cityState.removeChild(cityState.firstChild);
     }
-    place.innerText = `${data[0].name}, ${data[0].state} `;
+    if(data[0].state == undefined){
+      place.innerText = `${data[0].name}, ${data[0].country} `;
+    } else{
+      place.innerText = `${data[0].name}, ${data[0].state}, ${data[0].country} `;
+    }
     cityState.appendChild(place);
   };
 
@@ -110,6 +115,7 @@ async function getWeatherForecast(lat, lon) {
     const response = await fetch(weatherUrl);
     const data = await response.json();
     
+    displayCurrent(data);
     displayWeather(data);
     console.log(data);
   }
@@ -129,7 +135,7 @@ async function getWeatherForecast(lat, lon) {
       tableWindSpeed.removeChild(tableWindSpeed.firstChild);
       tableCondition.removeChild(tableCondition.firstChild);
     }
-    let i=0;
+    let i=1;
     for(const day of weatherData){
         i++;
         // const listEl = document.createElement('td');
@@ -155,10 +161,89 @@ async function getWeatherForecast(lat, lon) {
         tableWindSpeed.appendChild(weatherWindSpeed);
         tableCondition.appendChild(weatherCondition);
         // tableRow.appendChild(listEl);
-        if(i>4){
+        if(i>5){
             break;
         }
     }
+  }
+
+  function displayCurrent(data){
+    let current = data.current;
+    let currentTemp = Math.trunc(current.temp);
+    let currentDate = dayjs(current.dt*1000).format('ddd, MMM, DD');
+    let weatherCard = document.getElementById('currentWeatherCard');
+    
+    // let place = document.getElementById('place').innerText;
+    // let currentPlace = document.createElement('h3');
+    // let weatherDate = document.createElement('span');
+    // let weatherTemp = document.createElement('span');
+    // let weatherHumid = document.createElement('span');
+    // let weatherWindSpeed = document.createElement('span');
+    // let weatherCondition = document.createElement('span');
+    // let br = document.createElement('br');
+    // currentPlace.textContent = `Current Weather in: ${place}`;
+    // weatherDate.textContent = currentDate;
+    // weatherTemp.textContent = `Temp: ${currentTemp}°F`;
+    // weatherHumid.textContent = `Humidity: ${current.humidity}%`;
+    // weatherWindSpeed.textContent = `Wind Speed: ${current.wind_speed}mph`;
+    // weatherCondition.textContent = `Current Conditions: ${current.weather[0].description}`;
+    
+    
+    //   while(weatherCard.hasChildNodes()){
+    //     weatherCard.removeChild(weatherCard.firstChild);
+    //   }
+    
+    // weatherCard.appendChild(currentPlace);
+    // weatherCard.appendChild(br);
+    // weatherCard.appendChild(weatherDate);
+    // weatherCard.appendChild(br);
+    // weatherCard.appendChild(weatherTemp);
+    // weatherCard.appendChild(br);
+    // weatherCard.appendChild(weatherHumid);
+    // weatherCard.appendChild(br);
+    // weatherCard.appendChild(weatherWindSpeed);
+    // weatherCard.appendChild(br);
+    // weatherCard.appendChild(weatherCondition);
+    // console.log(weatherCard);
+
+    let place = document.getElementById('place').innerText;
+    let elements = [
+      {
+        "element": document.createElement('h3'),
+        "textContent": `Current Weather in: ${place}`
+      },
+      {
+        "element": document.createElement('span'),
+        "textContent": currentDate
+      },
+      {
+        "element": document.createElement('span'),
+        "textContent": `Temp: ${currentTemp}°F`
+      },
+      {
+        "element": document.createElement('span'),
+        "textContent": `Humidity: ${current.humidity}%`
+      },
+      {
+        "element": document.createElement('span'),
+        "textContent": `Wind Speed: ${current.wind_speed}mph`
+      },
+      {
+        "element": document.createElement('span'),
+        "textContent": `Current Conditions: ${current.weather[0].description}`
+      }
+    ];
+
+    while(weatherCard.hasChildNodes()){
+      weatherCard.removeChild(weatherCard.firstChild);
+    }
+
+    for (let element of elements) {
+      element.element.textContent = element.textContent;
+      weatherCard.appendChild(element.element);
+      weatherCard.appendChild(document.createElement('br'));
+    }
+
   }
 
   
