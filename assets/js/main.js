@@ -1,11 +1,34 @@
-const countryData = JSON.parse(document.getElementById('countryCodes').textContent);
+// const countryData = JSON.parse(document.getElementById('countryCodes').textContent);
 var tableBody = document.getElementById('forecast');
 var city = document.getElementById('city');
 var state = document.getElementById('state');
 var lat
 var lon
+// const xmlhttp = new XMLHttpRequest();
+// xmlhttp.onload = function(){
+//   const countryData
+// }
 
-console.log(countryData);
+async function getCountryCodes(){
+  const codesUrl = `https://countriesnow.space/api/v0.1/countries/iso`;
+  const response = await fetch(codesUrl);
+  const data = await response.json();
+  countrySelectOptions(data);
+  console.log(data);
+  
+}
+function countrySelectOptions(data){
+  let countrySelect = document.getElementById('inputGroupSelect01');
+  console.log(data.data.length);
+  for(let i=0;i<data.data.length;i++) {
+    console.log(data.msg);
+    let newOption = document.createElement('option');
+    newOption.value = `${data.data[i].Iso2}`;
+    newOption.text = `${data.data[i].name}`;
+    countrySelect.add(newOption);
+ }
+}
+
 
 
 function processForm(){
@@ -29,7 +52,7 @@ async function getLocation(){
 
   function displayLocation(data){
     const cityState = document.getElementById('cityState');
-    var place = document.createElement('td');
+    let place = document.createElement('td');
 
     place.innerText = `${data[0].name}, ${data[0].state} `;
     cityState.appendChild(place);
@@ -85,5 +108,5 @@ async function getWeatherForecast(lat, lon) {
 
   
   
-  
+  getCountryCodes();
 //   getLocation();

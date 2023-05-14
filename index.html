@@ -12,7 +12,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Carter+One&display=swap" rel="stylesheet">
-    <script id="countryCodes" src="https://gist.github.com/keeguon/2310008.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <div class="container header p-5 my-4">
@@ -30,13 +29,10 @@
                     <form class="row g-2" role="search" onsubmit="processForm()">
                         <div class="input-group row mt-2">
                             <!-- <label class="input-group-text" for="inputGroupSelect01">Country</label> -->
-                            <select class="form-select" id="inputGroupSelect01"><!--on change function here -->
+                            <select class="form-select" id="inputGroupSelect01" onchange="addStates()"><!--on change function here -->
                               <option selected>Country...</option>
-                              <option value="1">One</option>
-                              <option value="2">Two</option>
-                              <option value="3">Three</option>
                             </select>
-                            <select class="form-select" id="inputGroupSelect01">
+                            <select class="form-select d-none" id="inputGroupSelect02">
                                 <option selected>State...</option>
                                 <option value="1">One</option>
                                 <option value="2">Two</option>
@@ -45,8 +41,6 @@
                         </div>
                         <input class="form-control me-2 col-12" type="search" placeholder="Enter City Name" required aria-label="Search">
                         <button class="btn btn-success" type="submit">Search</button>
-                    <!--  -->
-                        
                     </form>
                     </div>
                 </nav>
@@ -63,40 +57,24 @@
             <table class="table col-6" id="forecast">
                 <thead>
                 <tr id="cityState">
-                    <!-- <th scope="col" id="city"></th>
-                    <th scope="col" id="state"></th> -->
-                    <!-- <th scope="col">Day-3</th>
-                    <th scope="col">Day-4</th>
-                    <th scope="col">Day-5</th> -->
+
                 </tr>
                 </thead>
                 <tbody>
                 <tr id="weatherDate">
-                    <!-- <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td> -->
+
                 </tr>
                 <tr id="weatherTemp">
-                    <!-- <th scope="row">2</th>
-                    <td>Jacob</td>
-                    <td>Thornton</td>
-                    <td>@fat</td> -->
+
                 </tr>
                 <tr id="weatherHumid">
-                    <!-- <th scope="row">3</th>
-                    <td colspan="2">Larry the Bird</td>
-                    <td>@twitter</td> -->
+
                 </tr>
                 <tr id="weatherWindSpeed">
-                    <!-- <th scope="row">3</th>
-                    <td colspan="2">Larry the Bird</td>
-                    <td>@twitter</td> -->
+
                 </tr>
                 <tr id="weatherCondition">
-                    <!-- <th scope="row">3</th>
-                    <td colspan="2">Larry the Bird</td>
-                    <td>@twitter</td> -->
+
                 </tr>
                 </tbody>
             </table>
