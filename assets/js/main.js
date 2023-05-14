@@ -1,13 +1,5 @@
-// const countryData = JSON.parse(document.getElementById('countryCodes').textContent);
-var tableBody = document.getElementById('forecast');
-var city = document.getElementById('city');
-var state = document.getElementById('state');
 var lat
 var lon
-// const xmlhttp = new XMLHttpRequest();
-// xmlhttp.onload = function(){
-//   const countryData
-// }
 
 async function getCountryCodes(){
   const codesUrl = `https://countriesnow.space/api/v0.1/countries/iso`;
@@ -15,29 +7,82 @@ async function getCountryCodes(){
   const data = await response.json();
   countrySelectOptions(data);
   console.log(data);
-  
 }
+
 function countrySelectOptions(data){
-  let countrySelect = document.getElementById('inputGroupSelect01');
-  console.log(data.data.length);
+  let countrySelect = document.getElementById('countrySelect');
   for(let i=0;i<data.data.length;i++) {
-    console.log(data.msg);
     let newOption = document.createElement('option');
     newOption.value = `${data.data[i].Iso2}`;
     newOption.text = `${data.data[i].name}`;
     countrySelect.add(newOption);
  }
 }
+ const stateRequest = {"country": "United States"};
 
+async function getStateCodes(data){
+  const codesUrl = `https://countriesnow.space/api/v0.1/countries/states`;
+  try {
+    const response = await fetch(codesUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    const result = await response.json();
+    console.log("Success:", result);
+    stateSelectOptions(result);
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
 
+function stateSelectOptions(data){
+  let stateSelect = document.getElementById('stateSelect');
+  for(let i=0;i<data.data.states.length;i++) {
+    let newOption = document.createElement('option');
+    newOption.value = `${data.data.states[i].state_code}`;
+    newOption.text = `${data.data.states[i].name}`;
+    stateSelect.add(newOption);
+ }
+}
+
+function addStateSelect(){
+  let countryChoice = document.getElementById('countrySelect').value;
+  let stateChoice = document.getElementById('stateSelect').classList;
+  let islandStateChoice = document.getElementById('islandStateSelect').classList;
+  if((countryChoice == 'US') && (stateChoice.contains("d-none"))){
+    stateChoice.remove("d-none");
+    islandStateChoice.add("d-none");
+  } else if((countryChoice == 'UM') && (islandStateChoice.contains("d-none"))){
+    islandStateChoice.remove("d-none");
+    stateChoice.add("d-none");
+  } else if((stateChoice.contains("d-none")) === false || (islandStateChoice.contains("d-none")=== false)){
+    stateChoice.add("d-none");
+    islandStateChoice.add("d-none");
+  }
+}
 
 function processForm(){
     event.preventDefault();
-    console.log("Success");
+    let countryChoice = document.getElementById('countrySelect').value;
+    let stateChoice = document.getElementById('stateSelect').value;
+    let cityChoice = document.getElementById('citySelect').value;
+    if(countryChoice !== 'US'){
+      stateChoice = "";
+    }
+
+    getLocation(countryChoice, cityChoice, stateChoice);
+    
 };
 
-async function getLocation(){
-    // var locationUrl = `http://api.openweathermap.org/geo/1.0/direct?q=Dallas&limit=5&appid=efc57a7623532e34f2cd174588ac46a8`;
+async function getLocation(countryChoice, cityChoice, stateChoice){
+    let country = countryChoice;
+    let state = stateChoice;
+    let city = cityChoice;
+    console.log(country, state, city);
+    var locationUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${city},${country}&limit=5&appid=efc57a7623532e34f2cd174588ac46a8`;
     const response = await fetch(locationUrl);
     const data = await response.json();
     
@@ -53,13 +98,15 @@ async function getLocation(){
   function displayLocation(data){
     const cityState = document.getElementById('cityState');
     let place = document.createElement('td');
-
+    while (cityState.hasChildNodes()) {
+      cityState.removeChild(cityState.firstChild);
+    }
     place.innerText = `${data[0].name}, ${data[0].state} `;
     cityState.appendChild(place);
   };
 
 async function getWeatherForecast(lat, lon) {
-    // var weatherUrl = `http://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=efc57a7623532e34f2cd174588ac46a8&units=imperial`;
+    var weatherUrl = `http://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=efc57a7623532e34f2cd174588ac46a8&units=imperial`;
     const response = await fetch(weatherUrl);
     const data = await response.json();
     
@@ -74,6 +121,14 @@ async function getWeatherForecast(lat, lon) {
     const tableHumid = document.getElementById('weatherHumid');
     const tableWindSpeed = document.getElementById('weatherWindSpeed');
     const tableCondition = document.getElementById('weatherCondition');
+    const tableBody = document.getElementById('forecast');
+    while(tableDate.hasChildNodes() || tableTemp.hasChildNodes() || tableHumid.hasChildNodes() || tableWindSpeed.hasChildNodes() || tableCondition.hasChildNodes()){
+      tableDate.removeChild(tableDate.firstChild);
+      tableTemp.removeChild(tableTemp.firstChild);
+      tableHumid.removeChild(tableHumid.firstChild);
+      tableWindSpeed.removeChild(tableWindSpeed.firstChild);
+      tableCondition.removeChild(tableCondition.firstChild);
+    }
     let i=0;
     for(const day of weatherData){
         i++;
@@ -109,4 +164,5 @@ async function getWeatherForecast(lat, lon) {
   
   
   getCountryCodes();
+  getStateCodes(stateRequest);
 //   getLocation();
