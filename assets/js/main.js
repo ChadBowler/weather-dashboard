@@ -1,7 +1,35 @@
+
 let savedPlaces = JSON.parse(localStorage.getItem('savedPlaces'));
+let searchList = document.getElementById('searchList');
+let check;
 var lat;
 var lon;
 const stateRequest = {"country": "United States"};
+
+searchList.addEventListener("click", function(event){
+  event.stopImmediatePropagation();
+
+  if((event.target.tagName == 'BUTTON')){
+    
+    check = event.target.innerText;
+    for(let i=0;i<savedPlaces.length;i++){
+      if(check == savedPlaces[i].place){
+        lat = savedPlaces[i].lat;
+        lon = savedPlaces[i].lon;
+        console.log(lat);
+        console.log(lon);
+        console.log(check);
+        getWeatherForecast(lat, lon);
+        displayLocation();
+        break;
+        
+      }
+    }
+  }
+});
+
+
+
 //get country codes from countriesnow for the search selection
 async function getCountryCodes(){
     const codesUrl = `https://countriesnow.space/api/v0.1/countries/iso`;
@@ -114,19 +142,28 @@ function displayLocation(data){
     while (cityState.hasChildNodes()) {
       cityState.removeChild(cityState.firstChild);
     }
-    if(data[0].state == undefined){
-      place.innerText = `${data[0].name}, ${data[0].country} `;
+
+    if(check !== undefined){
+      place.innerText = check;
+      
     } else{
-      place.innerText = `${data[0].name}, ${data[0].state}, ${data[0].country} `;
+      if(data[0].state == undefined){
+        place.innerText = `${data[0].name}, ${data[0].country} `;
+      } else{
+        place.innerText = `${data[0].name}, ${data[0].state}, ${data[0].country} `;
+      }
     }
+    console.log(`Place is: ${place.innerText}`);
+    
     cityState.appendChild(place);
     saveSearchList(place);
 };
 
 
 function displaySearchList(){
-  let searchList = document.getElementById('searchList');
+  // let searchList = document.getElementById('searchList');
   //savedPlaces was declared globally
+  console.log(`check: ${check}`);
   try {
     while(searchList.hasChildNodes()){
       searchList.removeChild(searchList.firstChild);
@@ -153,16 +190,26 @@ function displaySearchList(){
 function saveSearchList(place){
   // console.log(`${place.innerText} is being saved`);
   // console.log(`lat:${lat}, lon:${lon}`);
-  let searchList = document.getElementById('searchList');
+  // let searchList = document.getElementById('searchList');
   //savedPlaces was declared globally
   
   if(savedPlaces!==null){
-    savedPlaces.unshift({
-      place: place.innerText,
-      lat: lat,
-      lon: lon
-    });
-  } else{
+    // console.log(`This place: ${savedPlaces[i]}`);
+    for(let i=0;i<savedPlaces.length;i++){
+      if(savedPlaces[i].place == place.innerText){
+        savedPlaces.splice(i, 1);
+      }
+    }
+      
+        savedPlaces.unshift({
+          place: place.innerText,
+          lat: lat,
+          lon: lon
+        });
+      
+
+    }
+   else{
     savedPlaces = [];
     savedPlaces.unshift({
       place: place.innerText,
@@ -181,7 +228,8 @@ async function getWeatherForecast(lat, lon) {
     var weatherUrl = `http://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=efc57a7623532e34f2cd174588ac46a8&units=imperial`;
     const response = await fetch(weatherUrl);
     const data = await response.json();
-    
+    console.log(data);
+      
     displayCurrent(data);
     displayWeather(data);
     console.log(data);
@@ -236,7 +284,12 @@ function displayCurrent(data){
     let currentTemp = Math.trunc(current.temp);
     let currentDate = dayjs(current.dt*1000).format('ddd, MMM DD');
     let weatherCard = document.getElementById('currentWeatherCard');
-    let place = document.getElementById('place').innerText;
+    let place;
+    if(check == undefined){
+      place = document.getElementById('place').innerText;
+    } else{
+      place = check;
+    }
     let elements = [
       {
         "element": document.createElement('h3'),
@@ -273,9 +326,12 @@ function displayCurrent(data){
       weatherCard.appendChild(element.element);
       weatherCard.appendChild(document.createElement('br'));
     }
-
+  
 }
-//called as soon as it's ready. Don't need an invitation to get this data
+
+
+
+//called as soon as it's ready. Don't need an invitation to run these
 getCountryCodes();
 getStateCodes(stateRequest);
 displaySearchList();
