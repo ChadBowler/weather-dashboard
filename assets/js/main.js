@@ -127,10 +127,12 @@ function displayLocation(data){
 function displaySearchList(){
   let searchList = document.getElementById('searchList');
   //savedPlaces was declared globally
-  // savedPlaces = JSON.parse(localStorage.getItem('savedPlaces'));
   try {
     while(searchList.hasChildNodes()){
       searchList.removeChild(searchList.firstChild);
+    }
+    if(savedPlaces.length>7){
+      savedPlaces.pop();
     }
     for(let i=0;i<savedPlaces.length;i++){
       let searchListItem = document.createElement('button');
@@ -153,36 +155,22 @@ function saveSearchList(place){
   // console.log(`lat:${lat}, lon:${lon}`);
   let searchList = document.getElementById('searchList');
   //savedPlaces was declared globally
-  // savedPlaces = JSON.parse(localStorage.getItem('savedPlaces'));
-
+  
   if(savedPlaces!==null){
-    savedPlaces.push({
+    savedPlaces.unshift({
       place: place.innerText,
       lat: lat,
       lon: lon
     });
-
-    // for(let i=0;i<savedPlaces.length;i++){
-    //   let searchListItem = document.createElement('button');
-    //   searchListItem.classList.add("list-group-item", "list-group-item-action", "list-group-item-success");
-    //   searchListItem.innerText = savedPlaces[i].place;
-    //   searchList.appendChild(searchListItem);
-      
-    // }
-
   } else{
     savedPlaces = [];
-    savedPlaces.push({
+    savedPlaces.unshift({
       place: place.innerText,
       lat: lat,
       lon: lon
     });
-
-    // let searchListItem = document.createElement('button');
-    // searchListItem.classList.add("list-group-item", "list-group-item-action", "list-group-item-success");
-    // searchListItem.innerText = place.innerText;
-    // searchList.appendChild(searchListItem);
   }
+  
 
   displaySearchList();
   localStorage.setItem('savedPlaces', JSON.stringify(savedPlaces));
