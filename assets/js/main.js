@@ -1,5 +1,6 @@
-var lat
-var lon
+let savedPlaces = JSON.parse(localStorage.getItem('savedPlaces'));
+var lat;
+var lon;
 const stateRequest = {"country": "United States"};
 //get country codes from countriesnow for the search selection
 async function getCountryCodes(){
@@ -50,6 +51,7 @@ function stateSelectOptions(data){
 }
 //displays the state selection option if US is chosen country
 //TODO: remove islandStateChoice - not necessary
+//TODO: adjust the list of states to remove the UM states
 function addStateSelect(){
     let countryChoice = document.getElementById('countrySelect').value;
     let stateChoice = document.getElementById('stateSelect').classList;
@@ -66,7 +68,7 @@ function addStateSelect(){
     }
 }
 //form handler - Starts a chain, calling functions to get all the API data, and display them
-//TODO: put in some error handling
+//TODO: improve the error handling
 function processForm(){
     event.preventDefault();
     let countryChoice = document.getElementById('countrySelect').value;
@@ -75,7 +77,19 @@ function processForm(){
     if(countryChoice !== 'US'){
       stateChoice = "";
     }
-    getLocation(countryChoice, cityChoice, stateChoice);   
+    // getLocation(countryChoice, cityChoice, stateChoice);
+    getLocation(countryChoice, cityChoice, stateChoice).then((data) =>{
+          lat = `${(data[0].lat.toFixed(4))}`;
+          lon = `${(data[0].lon.toFixed(4))}`;
+          
+          displayLocation(data);
+          getWeatherForecast(lat, lon);
+          console.log(data);
+          console.log(data[0].name);
+      }).catch(error =>{
+          console.error();
+          alert("Error occured, please try again");
+      });
 };
 //getting latitude and longitude based on user input passed on from processForm function
 //TODO: add state into the locationUrl variable
@@ -85,17 +99,13 @@ async function getLocation(countryChoice, cityChoice, stateChoice){
     let city = cityChoice;
     console.log(country, state, city);
     var locationUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${city},${country}&limit=5&appid=efc57a7623532e34f2cd174588ac46a8`;
+  
     const response = await fetch(locationUrl);
     const data = await response.json();
-    
-    lat = `${(data[0].lat.toFixed(4))}`;
-    lon = `${(data[0].lon.toFixed(4))}`;
-    
-    displayLocation(data);
-    getWeatherForecast(lat, lon);
-    console.log(data);
-    console.log(data[0].name);
+    return data;
 };
+
+
 //display the location in the main section
 function displayLocation(data){
     const cityState = document.getElementById('cityState');
@@ -110,7 +120,74 @@ function displayLocation(data){
       place.innerText = `${data[0].name}, ${data[0].state}, ${data[0].country} `;
     }
     cityState.appendChild(place);
+    saveSearchList(place);
 };
+
+
+function displaySearchList(){
+  let searchList = document.getElementById('searchList');
+  //savedPlaces was declared globally
+  // savedPlaces = JSON.parse(localStorage.getItem('savedPlaces'));
+  try {
+    while(searchList.hasChildNodes()){
+      searchList.removeChild(searchList.firstChild);
+    }
+    for(let i=0;i<savedPlaces.length;i++){
+      let searchListItem = document.createElement('button');
+      searchListItem.classList.add("list-group-item", "list-group-item-action", "list-group-item-success");
+      searchListItem.innerText = savedPlaces[i].place;
+      searchList.appendChild(searchListItem); 
+    }
+  } catch (error) {
+    let noSearches = document.createElement('h4');
+    noSearches.innerText = `No recent searches found`;
+    searchList.appendChild(noSearches);
+    return;
+  }
+  
+}
+
+
+function saveSearchList(place){
+  // console.log(`${place.innerText} is being saved`);
+  // console.log(`lat:${lat}, lon:${lon}`);
+  let searchList = document.getElementById('searchList');
+  //savedPlaces was declared globally
+  // savedPlaces = JSON.parse(localStorage.getItem('savedPlaces'));
+
+  if(savedPlaces!==null){
+    savedPlaces.push({
+      place: place.innerText,
+      lat: lat,
+      lon: lon
+    });
+
+    // for(let i=0;i<savedPlaces.length;i++){
+    //   let searchListItem = document.createElement('button');
+    //   searchListItem.classList.add("list-group-item", "list-group-item-action", "list-group-item-success");
+    //   searchListItem.innerText = savedPlaces[i].place;
+    //   searchList.appendChild(searchListItem);
+      
+    // }
+
+  } else{
+    savedPlaces = [];
+    savedPlaces.push({
+      place: place.innerText,
+      lat: lat,
+      lon: lon
+    });
+
+    // let searchListItem = document.createElement('button');
+    // searchListItem.classList.add("list-group-item", "list-group-item-action", "list-group-item-success");
+    // searchListItem.innerText = place.innerText;
+    // searchList.appendChild(searchListItem);
+  }
+
+  displaySearchList();
+  localStorage.setItem('savedPlaces', JSON.stringify(savedPlaces));
+
+}
 //use openweathermap API to get weather data using latitude and longitude from geo API
 async function getWeatherForecast(lat, lon) {
     var weatherUrl = `http://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=efc57a7623532e34f2cd174588ac46a8&units=imperial`;
@@ -213,3 +290,4 @@ function displayCurrent(data){
 //called as soon as it's ready. Don't need an invitation to get this data
 getCountryCodes();
 getStateCodes(stateRequest);
+displaySearchList();
