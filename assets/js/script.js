@@ -1,16 +1,17 @@
-
-let savedPlaces = JSON.parse(localStorage.getItem('savedPlaces'));
-let searchList = document.getElementById('searchList');
-let check;
+var savedPlaces = JSON.parse(localStorage.getItem('savedPlaces'));
+var searchButton = document.getElementById('searchButton');
+var searchList = document.getElementById('searchList');
+var check="";
 var lat;
 var lon;
 const stateRequest = {"country": "United States"};
 
-searchList.addEventListener("click", function(event){
+searchButton.addEventListener('submit', processForm);
+//event listener for the 'recently searched' list
+searchList.addEventListener('click', function(event){
   event.stopImmediatePropagation();
 
   if((event.target.tagName == 'BUTTON')){
-    
     check = event.target.innerText;
     for(let i=0;i<savedPlaces.length;i++){
       if(check == savedPlaces[i].place){
@@ -22,14 +23,10 @@ searchList.addEventListener("click", function(event){
         getWeatherForecast(lat, lon);
         displayLocation();
         break;
-        
       }
     }
   }
 });
-
-
-
 //get country codes from countriesnow for the search selection
 async function getCountryCodes(){
     const codesUrl = `https://countriesnow.space/api/v0.1/countries/iso`;
@@ -78,62 +75,55 @@ function stateSelectOptions(data){
     }
 }
 //displays the state selection option if US is chosen country
-//TODO: remove islandStateChoice - not necessary
-//TODO: adjust the list of states to remove the UM states
 function addStateSelect(){
     let countryChoice = document.getElementById('countrySelect').value;
     let stateChoice = document.getElementById('stateSelect').classList;
-    let islandStateChoice = document.getElementById('islandStateSelect').classList;
     if((countryChoice == 'US') && (stateChoice.contains("d-none"))){
       stateChoice.remove("d-none");
-      islandStateChoice.add("d-none");
-    } else if((countryChoice == 'UM') && (islandStateChoice.contains("d-none"))){
-      islandStateChoice.remove("d-none");
+    } else if((stateChoice.contains("d-none")) === false){
       stateChoice.add("d-none");
-    } else if((stateChoice.contains("d-none")) === false || (islandStateChoice.contains("d-none")=== false)){
-      stateChoice.add("d-none");
-      islandStateChoice.add("d-none");
-    }
-}
+    };
+};
 //form handler - Starts a chain, calling functions to get all the API data, and display them
 //TODO: improve the error handling
-function processForm(){
-    event.preventDefault();
-    let countryChoice = document.getElementById('countrySelect').value;
-    let stateChoice = document.getElementById('stateSelect').value;
-    let cityChoice = document.getElementById('citySelect').value;
-    if(countryChoice !== 'US'){
-      stateChoice = "";
-    }
-    // getLocation(countryChoice, cityChoice, stateChoice);
-    getLocation(countryChoice, cityChoice, stateChoice).then((data) =>{
-          lat = `${(data[0].lat.toFixed(4))}`;
-          lon = `${(data[0].lon.toFixed(4))}`;
-          
-          displayLocation(data);
-          getWeatherForecast(lat, lon);
-          console.log(data);
-          console.log(data[0].name);
-      }).catch(error =>{
-          console.error();
-          alert("Error occured, please try again");
-      });
+function processForm(event){
+  event.preventDefault();
+  let countryChoice = document.getElementById('countrySelect').value;
+  let stateChoice = document.getElementById('stateSelect').value;
+  let cityChoice = document.getElementById('citySelect').value;
+  if(countryChoice !== 'US'){
+    stateChoice = "";
+  }
+  getLocation(countryChoice, cityChoice, stateChoice);
 };
 //getting latitude and longitude based on user input passed on from processForm function
-//TODO: add state into the locationUrl variable
 async function getLocation(countryChoice, cityChoice, stateChoice){
     let country = countryChoice;
     let state = stateChoice;
     let city = cityChoice;
     console.log(country, state, city);
-    var locationUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${city},${country}&limit=5&appid=efc57a7623532e34f2cd174588ac46a8`;
-  
+    console.log(`state: ${state}`);
+    if(state == ""){
+      var locationUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${city},${country}&limit=5&appid=efc57a7623532e34f2cd174588ac46a8`;
+    } else {
+      var locationUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${city},${state},${country}&limit=5&appid=efc57a7623532e34f2cd174588ac46a8`;
+    }
+   try {
     const response = await fetch(locationUrl);
-    const data = await response.json();
-    return data;
+    if(response.ok){
+      const data = await response.json();
+      lat = `${(data[0].lat.toFixed(4))}`;
+      lon = `${(data[0].lon.toFixed(4))}`;
+      console.log('hello');
+      displayLocation(data);
+      getWeatherForecast(lat, lon);
+   } else{
+      throw new Error(`${response.status}`);
+   }
+   } catch (error) {
+    console.error(error);
+   }
 };
-
-
 //display the location in the main section
 function displayLocation(data){
     const cityState = document.getElementById('cityState');
@@ -142,72 +132,56 @@ function displayLocation(data){
     while (cityState.hasChildNodes()) {
       cityState.removeChild(cityState.firstChild);
     }
-
-    if(check !== undefined){
-      place.innerText = check;
-      
-    } else{
-      if(data[0].state == undefined){
-        place.innerText = `${data[0].name}, ${data[0].country} `;
-      } else{
-        place.innerText = `${data[0].name}, ${data[0].state}, ${data[0].country} `;
+      try {
+        if(data[0].state == undefined){
+          place.innerText = `${data[0].name}, ${data[0].country} `;
+        } else{
+          place.innerText = `${data[0].name}, ${data[0].state}, ${data[0].country} `;
+        }
+      } catch (error) {
+        place.innerText = check;
       }
-    }
-    console.log(`Place is: ${place.innerText}`);
-    
     cityState.appendChild(place);
     saveSearchList(place);
 };
-
-
+//taking items from local storage and displaying them on screen
 function displaySearchList(){
-  // let searchList = document.getElementById('searchList');
   //savedPlaces was declared globally
   console.log(`check: ${check}`);
   try {
     while(searchList.hasChildNodes()){
       searchList.removeChild(searchList.firstChild);
-    }
+    };
     if(savedPlaces.length>7){
       savedPlaces.pop();
-    }
+    };
     for(let i=0;i<savedPlaces.length;i++){
       let searchListItem = document.createElement('button');
       searchListItem.classList.add("list-group-item", "list-group-item-action", "list-group-item-success");
       searchListItem.innerText = savedPlaces[i].place;
       searchList.appendChild(searchListItem); 
-    }
+    };
   } catch (error) {
     let noSearches = document.createElement('h4');
     noSearches.innerText = `No recent searches found`;
     searchList.appendChild(noSearches);
     return;
-  }
-  
-}
-
-
+  };
+};
+//save searches to local storage
 function saveSearchList(place){
-  // console.log(`${place.innerText} is being saved`);
-  // console.log(`lat:${lat}, lon:${lon}`);
-  // let searchList = document.getElementById('searchList');
   //savedPlaces was declared globally
-  
   if(savedPlaces!==null){
-    // console.log(`This place: ${savedPlaces[i]}`);
     for(let i=0;i<savedPlaces.length;i++){
       if(savedPlaces[i].place == place.innerText){
         savedPlaces.splice(i, 1);
       }
     }
-      
-        savedPlaces.unshift({
-          place: place.innerText,
-          lat: lat,
-          lon: lon
-        });
-      
-
+    savedPlaces.unshift({
+      place: place.innerText,
+      lat: lat,
+      lon: lon
+    });
     }
    else{
     savedPlaces = [];
@@ -217,23 +191,27 @@ function saveSearchList(place){
       lon: lon
     });
   }
-  
-
   displaySearchList();
   localStorage.setItem('savedPlaces', JSON.stringify(savedPlaces));
-
 }
 //use openweathermap API to get weather data using latitude and longitude from geo API
 async function getWeatherForecast(lat, lon) {
     var weatherUrl = `http://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=efc57a7623532e34f2cd174588ac46a8&units=imperial`;
-    const response = await fetch(weatherUrl);
-    const data = await response.json();
-    console.log(data);
-      
-    displayCurrent(data);
-    displayWeather(data);
-    console.log(data);
-}
+    try {
+      const response = await fetch(weatherUrl);
+      if(response.ok){
+        const data = await response.json();
+        console.log(data);
+        displayCurrent(data);
+        displayWeather(data);
+        console.log(data);
+     } else{
+        throw new Error(`${response.status}`);
+     };
+     } catch (error) {
+      console.error(error);
+     };
+};
 //clear main section and display new weather data
 function displayWeather(data){
     const weatherData = data.daily;
@@ -242,7 +220,6 @@ function displayWeather(data){
     const tableHumid = document.getElementById('weatherHumid');
     const tableWindSpeed = document.getElementById('weatherWindSpeed');
     const tableCondition = document.getElementById('weatherCondition');
-    const tableBody = document.getElementById('forecast');
 
     while(tableDate.hasChildNodes() || tableTemp.hasChildNodes() || tableHumid.hasChildNodes() || tableWindSpeed.hasChildNodes() || tableCondition.hasChildNodes()){
         tableDate.removeChild(tableDate.firstChild);
@@ -250,7 +227,7 @@ function displayWeather(data){
         tableHumid.removeChild(tableHumid.firstChild);
         tableWindSpeed.removeChild(tableWindSpeed.firstChild);
         tableCondition.removeChild(tableCondition.firstChild);
-    }
+    };
 
     let i=1;
     for(const day of weatherData){
@@ -267,7 +244,7 @@ function displayWeather(data){
         weatherTemp.textContent = `${maxTemp}°F/${minTemp}°F`;
         weatherHumid.textContent = `Humidity: ${day.humidity}%`;
         weatherWindSpeed.textContent = `Wind Speed: ${day.wind_speed}mph`;
-        weatherCondition.textContent = `${day.weather[0].description} ${day.weather[0].icon}.png`;
+        weatherCondition.textContent = `${day.weather[0].description} ${day.weather[0].icon.png}`;
         tableDate.appendChild(weatherDate);
         tableTemp.appendChild(weatherTemp);
         tableHumid.appendChild(weatherHumid);
@@ -275,9 +252,9 @@ function displayWeather(data){
         tableCondition.appendChild(weatherCondition);
         if(i>5){
             break;
-        }
-    }
-}
+        };
+    };
+};
 //clear out and refill current weather card data
 function displayCurrent(data){
     let current = data.current;
@@ -285,11 +262,13 @@ function displayCurrent(data){
     let currentDate = dayjs(current.dt*1000).format('ddd, MMM DD');
     let weatherCard = document.getElementById('currentWeatherCard');
     let place;
-    if(check == undefined){
+
+    try {
       place = document.getElementById('place').innerText;
-    } else{
+    } catch (error) {
       place = check;
-    }
+    };
+    
     let elements = [
       {
         "element": document.createElement('h3'),
@@ -319,18 +298,14 @@ function displayCurrent(data){
 
     while(weatherCard.hasChildNodes()){
       weatherCard.removeChild(weatherCard.firstChild);
-    }
+    };
 
     for (let element of elements) {
       element.element.textContent = element.textContent;
       weatherCard.appendChild(element.element);
       weatherCard.appendChild(document.createElement('br'));
-    }
-  
-}
-
-
-
+    };
+};
 //called as soon as it's ready. Don't need an invitation to run these
 getCountryCodes();
 getStateCodes(stateRequest);
