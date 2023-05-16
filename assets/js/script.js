@@ -1,6 +1,13 @@
 var savedPlaces = JSON.parse(localStorage.getItem('savedPlaces'));
 var searchButton = document.getElementById('searchButton');
 var searchList = document.getElementById('searchList');
+const sunny = 'assets/images/sun_wo_bg.png';
+const partlyCloudy = 'assets/images/sun_cloud_wo_bg.png';
+const cloudy = 'assets/images/cloud_wo_bg.png';
+const rainy = 'assets/images/rain_cloud_wo_bg.png';
+const haze = 'assets/images/haze_wo_bg.png';
+const thunder = 'assets/images/thundercloud_wo_bg.png';
+const snowy = 'assets/images/snowflake_wo_bg.png';
 var check="";
 var lat;
 var lon;
@@ -240,16 +247,41 @@ function displayWeather(data){
         let weatherHumid = document.createElement('td');
         let weatherWindSpeed = document.createElement('td');
         let weatherCondition = document.createElement('td');
+        let weatherIcon = document.createElement('td');
+        let weatherIconImage = document.createElement('img');
+        let weatherID = day.weather[0].id;
         weatherDate.textContent = `${dayOfWeek}`;
         weatherTemp.textContent = `${maxTemp}°F/${minTemp}°F`;
         weatherHumid.textContent = `Humidity: ${day.humidity}%`;
         weatherWindSpeed.textContent = `Wind Speed: ${day.wind_speed}mph`;
-        weatherCondition.textContent = `${day.weather[0].description} ${day.weather[0].icon.png}`;
+        weatherCondition.textContent = `${day.weather[0].description}`;
+        weatherCondition.classList.add('align-bottom');
         tableDate.appendChild(weatherDate);
         tableTemp.appendChild(weatherTemp);
         tableHumid.appendChild(weatherHumid);
         tableWindSpeed.appendChild(weatherWindSpeed);
         tableCondition.appendChild(weatherCondition);
+        weatherIcon.append(weatherIconImage);
+        weatherCondition.appendChild(weatherIcon);
+
+        if (weatherID >= 200 && weatherID <= 232) {
+          weatherIconImage.src = thunder;
+        } else if(weatherID >= 300 && weatherID <= 532) {
+          weatherIconImage.src = rainy;
+        } else if(weatherID >= 600 && weatherID <= 622) {
+          weatherIconImage.src = snowy;
+        } else if(weatherID >= 701 && weatherID <= 781) {
+          weatherIconImage.src = haze;
+        } else if(weatherID === 800) {
+          weatherIconImage.src = sunny;
+        } else if(weatherID >= 801 && weatherID <= 802) {
+          weatherIconImage.src = partlyCloudy;
+        } else if(weatherID >= 803 && weatherID <= 804) {
+          weatherIconImage.src = cloudy;
+        }
+        weatherIconImage.style.maxWidth = '100px';
+        weatherIconImage.style.maxHeight = '100px';
+
         if(i>5){
             break;
         };
@@ -261,7 +293,25 @@ function displayCurrent(data){
     let currentTemp = Math.trunc(current.temp);
     let currentDate = dayjs(current.dt*1000).format('ddd, MMM DD');
     let weatherCard = document.getElementById('currentWeatherCard');
+    var currentWeatherIcon = document.getElementById('currentWeatherIcon');
+    let currentIconId = current.weather[0].id;
     let place;
+
+    if (currentIconId >= 200 && currentIconId <= 232) {
+      currentWeatherIcon.src = thunder;
+    } else if(currentIconId >= 300 && currentIconId <= 532) {
+      currentWeatherIcon.src = rainy;
+    } else if(currentIconId >= 600 && currentIconId <= 622) {
+      currentWeatherIcon.src = snowy;
+    } else if(currentIconId >= 701 && currentIconId <= 781) {
+      currentWeatherIcon.src = haze;
+    } else if(currentIconId === 800) {
+      currentWeatherIcon.src = sunny;
+    } else if(currentIconId >= 801 && currentIconId <= 802) {
+      currentWeatherIcon.src = partlyCloudy;
+    } else if(currentIconId >= 803 && currentIconId <= 804) {
+      currentWeatherIcon.src = cloudy;
+    }
 
     try {
       place = document.getElementById('place').innerText;

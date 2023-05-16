@@ -12,3 +12,8 @@ body{
 .header {
     font-family: 'Carter One', cursive;
 }
+
+#currentWeatherIcon{
+    opacity: 100 !important;
+    background-color: black;
+}
