@@ -1,5 +1,5 @@
 var savedPlaces = JSON.parse(localStorage.getItem('savedPlaces'));
-var searchButton = document.getElementById('searchButton');
+var searchForm = document.getElementById('searchForm');
 var searchList = document.getElementById('searchList');
 const sunny = 'assets/images/sun_wo_bg.png';
 const partlyCloudy = 'assets/images/sun_cloud_wo_bg.png';
@@ -13,7 +13,7 @@ var lat;
 var lon;
 const stateRequest = {"country": "United States"};
 
-searchButton.addEventListener('submit', processForm);
+searchForm.addEventListener('submit', processForm);
 //event listener for the 'recently searched' list
 searchList.addEventListener('click', function(event){
   event.stopImmediatePropagation();
@@ -164,7 +164,7 @@ function displaySearchList(){
     };
     for(let i=0;i<savedPlaces.length;i++){
       let searchListItem = document.createElement('button');
-      searchListItem.classList.add("list-group-item", "list-group-item-action", "list-group-item-success");
+      searchListItem.classList.add("list-group-item", "searchListButtons");
       searchListItem.innerText = savedPlaces[i].place;
       searchList.appendChild(searchListItem); 
     };
@@ -295,22 +295,47 @@ function displayCurrent(data){
     let weatherCard = document.getElementById('currentWeatherCard');
     var currentWeatherIcon = document.getElementById('currentWeatherIcon');
     let currentIconId = current.weather[0].id;
+    let mainBG = document.getElementById('body').classList;
+    let tableText = document.getElementById('forecast').classList;
     let place;
+
+    mainBG.remove('clearBlueSkyBG' ,'thunderstormBG', 'cloudyBG', 'snowyBG', 'rainyBG', 'partlyCloudyBG');
 
     if (currentIconId >= 200 && currentIconId <= 232) {
       currentWeatherIcon.src = thunder;
+      mainBG.add('thunderstormBG');
+      tableText.remove('blackText');
+      tableText.add('whiteText');
     } else if(currentIconId >= 300 && currentIconId <= 532) {
       currentWeatherIcon.src = rainy;
+      mainBG.add('rainyBG');
+      tableText.remove('blackText');
+      tableText.add('whiteText');
     } else if(currentIconId >= 600 && currentIconId <= 622) {
       currentWeatherIcon.src = snowy;
+      mainBG.add('snowyBG');
+      tableText.remove('blackText');
+      tableText.add('whiteText');
     } else if(currentIconId >= 701 && currentIconId <= 781) {
       currentWeatherIcon.src = haze;
+      mainBG.add('cloudyBG');
+      tableText.remove('blackText');
+      tableText.add('whiteText');
     } else if(currentIconId === 800) {
       currentWeatherIcon.src = sunny;
+      mainBG.add('clearBlueSkyBG');
+      tableText.remove('whiteText');
+      tableText.add('blackText');
     } else if(currentIconId >= 801 && currentIconId <= 802) {
       currentWeatherIcon.src = partlyCloudy;
+      mainBG.add('partlyCloudyBG');
+      tableText.remove('whiteText');
+      tableText.add('blackText');
     } else if(currentIconId >= 803 && currentIconId <= 804) {
       currentWeatherIcon.src = cloudy;
+      mainBG.add('cloudyBG');
+      tableText.remove('blackText');
+      tableText.add('whiteText');
     }
 
     try {

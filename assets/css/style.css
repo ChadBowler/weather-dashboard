@@ -2,18 +2,146 @@
     box-sizing: border-box;
 }
 
-body{
-    background-image: url(https://cdn.midjourney.com/033d5209-a7bd-414a-89dd-ea18064d333a/0_2.png);
+.clearBlueSkyBG {
+    background-image: url(../images/clear_blue_sky_1.png);
     min-height: 100dvh;
     background-size: cover;
-    
+}
+
+.thunderstormBG {
+    background-image: url(../images/thunderstorm_bg.png);
+    min-height: 100dvh;
+    background-size: cover;
+}
+
+.cloudyBG {
+    background-image: url(../images/cloudy_bg.png);
+    min-height: 100dvh;
+    background-size: cover;
+}
+
+.snowyBG {
+    background-image: url(../images/snowy_bg.png);
+    min-height: 100dvh;
+    background-size: cover;
+}
+
+.rainyBG {
+    background-image: url(../images/Rainy_bg.png);
+    min-height: 100dvh;
+    background-size: cover;
+}
+
+.partlyCloudyBG {
+    background-image: url(../images/sunny_sky_1.png);
+    min-height: 100dvh;
+    background-size: cover;
 }
 
 .header {
     font-family: 'Carter One', cursive;
 }
 
+#banner {
+    text-shadow: 3px 3px #404040;
+}
+
+.borderContainers {
+    border-radius: 10px !important;
+}
+
+#searchFormContainer {
+    /* color: #FFFAE4 !important; */
+    background-color: #404040 !important;
+}
+
+#searchButton, .searchListButtons {
+    color: #FFFAE4;
+    background-color: #115923;
+    padding: 15px 25px;
+    background-image: radial-gradient(93% 87% at 87% 89%, rgba(0, 0, 0, 0.23) 0%, transparent 86.18%), radial-gradient(66% 66% at 26% 20%, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 69.79%, rgba(255, 255, 255, 0) 100%);
+    box-shadow: inset -3px -3px 9px rgba(255, 255, 255, 0.25), inset 0px 3px 9px rgba(255, 255, 255, 0.3), inset 0px 1px 1px rgba(255, 255, 255, 0.6), inset 0px -8px 36px rgba(0, 0, 0, 0.3), inset 0px 1px 5px rgba(255, 255, 255, 0.6), 2px 19px 31px rgba(0, 0, 0, 0.2);
+    border-radius: 14px !important;
+    font-weight: bold;
+    font-size: 16px;
+    border: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+
+    cursor: pointer;
+}
+
+#searchButton:hover{
+    font-size: 20px;
+    border: 3px double rgb(72, 69, 219);
+}
+
+#searchButton:active{
+    border: 5px inset white;
+}
+
+.searchListButtons{
+    margin: 2px;
+    color: #FFFAE4 !important;
+    background-color: #404040 !important;
+}
+
+.searchListButtons:hover{
+    border: 3px inset white;
+    font-size: 20px;
+}
+
+input, select {
+    background: white;
+    padding: 10px;
+    padding-left: 20px;
+    height: 50px;
+    font-size: 14px;
+    border-radius: 14px !important;
+    box-shadow: inset 6px 6px 6px #cbced1, inset -6px -6px 6px white;
+  }
+
+  h4 {
+    text-align: center;
+  }
+
+  #forecast {
+    font-size: 1.2rem;
+    font-weight: 900;
+  }
+
+  .whiteText {
+    color: whitesmoke !important;
+    text-shadow: 1px 1px black !important;
+  }
+
+  .blackText {
+    color: black !important;
+    text-shadow: 1px 1px whitesmoke !important;
+  }
+
+  #cityState {
+    font-size: 1.5rem;
+  }
+
 #currentWeatherIcon{
     opacity: 100 !important;
-    background-color: black;
+    background-color: #404040;
+}
+
+@media screen and (max-width: 992px) {
+
+    #banner {
+        font-size: 3rem;
+    }
+    
+}
+
+@media screen and (max-width: 400px) {
+
+    #banner {
+        font-size: 2rem;
+    }
+    
 }
