@@ -8,9 +8,11 @@ Weather Dashboard is a simple browser app that allows you to search by country/c
 
 ## Video Walkthrough
 
+https://github.com/ChadBowler/weather-dashboard/assets/127648744/f9e3d832-f625-4bc9-ad6c-dde33783b24e
 
 ## Screenshot
 
+![Weather Dashboard (2)](https://github.com/ChadBowler/weather-dashboard/assets/127648744/d07314b4-c44f-4944-8f1b-36a04c658bb8)
 
 ### Installation
 
