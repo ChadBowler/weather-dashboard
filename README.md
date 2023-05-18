@@ -6,6 +6,12 @@ Weather Dashboard is a simple browser app that allows you to search by country/c
 
 * To get started, select a country from the dropdown menu, then type in the name of the city you are looking for.
 
+## Video Walkthrough
+
+
+## Screenshot
+
+
 ### Installation
 
 * This app is currently unavailable to install on your device. It is a browser app only.
@@ -19,6 +25,7 @@ Weather Dashboard is a simple browser app that allows you to search by country/c
 ## Features
 
 * Your seven most recent searches will be saved, and displayed on the screen below the search bar.
+* The background will change based on the current weather conditions.
 
 ## Credits
 

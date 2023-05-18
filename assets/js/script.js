@@ -2,6 +2,7 @@ const body = document.querySelector('html');
 var savedPlaces = JSON.parse(localStorage.getItem('savedPlaces'));
 var searchForm = document.getElementById('searchForm');
 var searchList = document.getElementById('searchList');
+var countrySelect = document.getElementById('countrySelect');
 const sunny = 'assets/images/sun_wo_bg.png';
 const partlyCloudy = 'assets/images/sun_cloud_wo_bg.png';
 const cloudy = 'assets/images/cloud_wo_bg.png';
@@ -9,11 +10,13 @@ const rainy = 'assets/images/rain_cloud_wo_bg.png';
 const haze = 'assets/images/haze_wo_bg.png';
 const thunder = 'assets/images/thundercloud_wo_bg.png';
 const snowy = 'assets/images/snowflake_wo_bg.png';
+const stateRequest = {"country": "United States"};
 var check="";
 var lat;
 var lon;
-const stateRequest = {"country": "United States"};
 
+//event listener to add state selection if 'US' is selected country
+countrySelect.addEventListener('change', addStateSelect);
 searchForm.addEventListener('submit', processForm);
 //event listener for the 'recently searched' list
 searchList.addEventListener('click', function(event){
@@ -21,7 +24,6 @@ searchList.addEventListener('click', function(event){
 
   if((event.target.tagName == 'BUTTON')){
     check = event.target.innerText;
-
     for(let i=0;i<savedPlaces.length;i++){
       if(check == savedPlaces[i].place.trim()){
         lat = savedPlaces[i].lat;
@@ -37,7 +39,7 @@ searchList.addEventListener('click', function(event){
 //get country codes from countriesnow for the search selection
 async function getCountryCodes(){
     const codesUrl = `https://countriesnow.space/api/v0.1/countries/iso`;
-    const response = await fetch(codesUrl);
+    const response = await fetch(codesUrl, { cache: "no-cache" });
     const data = await response.json();
     countrySelectOptions(data);
 }
@@ -58,6 +60,7 @@ async function getStateCodes(data){
     try {
       const response = await fetch(codesUrl, {
         method: "POST",
+        cache: "no-cache",
         headers: {
           "Content-Type": "application/json",
         },
@@ -90,7 +93,6 @@ function addStateSelect(){
     };
 };
 //form handler - Starts a chain, calling functions to get all the API data, and display them
-//TODO: improve the error handling
 function processForm(event){
   event.preventDefault();
   let countryChoice = document.getElementById('countrySelect').value;
@@ -112,7 +114,7 @@ async function getLocation(countryChoice, cityChoice, stateChoice){
       var locationUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${city},${state},${country}&limit=5&appid=efc57a7623532e34f2cd174588ac46a8`;
     }
    try {
-    const response = await fetch(locationUrl);
+    const response = await fetch(locationUrl, { cache: "no-cache" });
     if(response.ok){
       const data = await response.json();
       lat = `${(data[0].lat.toFixed(4))}`;
@@ -129,42 +131,28 @@ async function getLocation(countryChoice, cityChoice, stateChoice){
 //display the location in the main section
 function displayLocation(data){
     const cityState = document.getElementById('cityState');
-    let table = document.getElementById('forecast');
     let place = document.createElement('td');
     place.setAttribute('id', 'place');
 
-    table.animate(
-      [
-        {opacity: '100'},
-        {opacity: '0'},
-        {opacity: '100'}
-      ],
-      1000
-    );
-    setTimeout(()=>{
-      while (cityState.hasChildNodes()) {
-        cityState.removeChild(cityState.firstChild);
-      };
-    }, 500);
-    
-      try {
-        if(data[0].state == undefined){
-          place.innerText = `${data[0].name}, ${data[0].country} `;
-        } else{
-          place.innerText = `${data[0].name}, ${data[0].state}, ${data[0].country} `;
-        }
-      } catch (error) {
-        place.innerText = check;
+    try {
+      if(data[0].state == undefined){
+        place.innerText = `${data[0].name}, ${data[0].country}`;
+      } else{
+        place.innerText = `${data[0].name}, ${data[0].state}, ${data[0].country}`;
       }
-      setTimeout(()=>{
-        cityState.appendChild(place);
-      }, 500);
+    } catch (error) {
+      place.innerText = check;
+    };
+
+    while (cityState.hasChildNodes()) {
+      cityState.removeChild(cityState.firstChild);
+    };
     
+    cityState.appendChild(place);
     saveSearchList(place);
 };
 //taking items from local storage and displaying them on screen
 function displaySearchList(){
-  //savedPlaces was declared globally
   try {
     while(searchList.hasChildNodes()){
       searchList.removeChild(searchList.firstChild);
@@ -187,7 +175,6 @@ function displaySearchList(){
 };
 //save searches to local storage
 function saveSearchList(place){
-  //savedPlaces was declared globally
   if(savedPlaces!==null){
     for(let i=0;i<savedPlaces.length;i++){
       if(savedPlaces[i].place == place.innerText){
@@ -195,7 +182,7 @@ function saveSearchList(place){
       }
     }
     savedPlaces.unshift({
-      place: place.innerText,
+      place: place.innerText.trim(),
       lat: lat,
       lon: lon
     });
@@ -203,7 +190,7 @@ function saveSearchList(place){
    else{
     savedPlaces = [];
     savedPlaces.unshift({
-      place: place.innerText,
+      place: place.innerText.trim(),
       lat: lat,
       lon: lon
     });
@@ -215,7 +202,7 @@ function saveSearchList(place){
 async function getWeatherForecast(lat, lon) {
     var weatherUrl = `http://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=efc57a7623532e34f2cd174588ac46a8&units=imperial`;
     try {
-      const response = await fetch(weatherUrl);
+      const response = await fetch(weatherUrl, { cache: "no-cache" });
       if(response.ok){
         const data = await response.json();
         displayCurrent(data);
@@ -264,7 +251,7 @@ function displayWeather(data){
         weatherWindSpeed.textContent = `Wind Speed: ${day.wind_speed}mph`;
         weatherCondition.textContent = `${day.weather[0].description}`;
         weatherCondition.classList.add('align-bottom');
-
+        //timeout to sync up with background transition
         setTimeout(()=>{
           tableDate.appendChild(weatherDate);
           tableTemp.appendChild(weatherTemp);
@@ -275,7 +262,6 @@ function displayWeather(data){
           weatherCondition.appendChild(weatherIcon);
         }, 500);
         
-
         if (weatherID >= 200 && weatherID <= 232) {
           weatherIconImage.src = thunder;
         } else if(weatherID >= 300 && weatherID <= 532) {
@@ -309,19 +295,18 @@ function displayCurrent(data){
     let currentIconId = current.weather[0].id;
     let mainBG = document.getElementById('body').classList;
     let tableText = document.getElementById('forecast').classList;
-    let place;
+    var place;
+    
+    try {
+      place = document.getElementById('place').innerText;
+    } catch (error) {
+      place = check;
+    };
 
-    mainBG.remove('clearBlueSkyBG' ,'thunderstormBG', 'cloudyBG', 'snowyBG', 'rainyBG', 'partlyCloudyBG');
     //theme transition based on current weather conditions
+    mainBG.remove('clearBlueSkyBG' ,'thunderstormBG', 'cloudyBG', 'snowyBG', 'rainyBG', 'partlyCloudyBG');
     if (currentIconId >= 200 && currentIconId <= 232) {
-      body.animate(
-        [
-          {opacity: '100'},
-          {opacity: '0'},
-          {opacity: '100'}
-        ],
-        1000
-      );
+      backgroundTransition();
       setTimeout(()=>{
         currentWeatherIcon.src = thunder;
         mainBG.add('thunderstormBG');
@@ -330,14 +315,7 @@ function displayCurrent(data){
       }, 500);
         
     } else if(currentIconId >= 300 && currentIconId <= 532) {
-      body.animate(
-        [
-          {opacity: '100'},
-          {opacity: '0'},
-          {opacity: '100'}
-        ],
-        1000
-      );
+      backgroundTransition();
       setTimeout(()=>{
         currentWeatherIcon.src = rainy;
         mainBG.add('rainyBG');
@@ -346,14 +324,7 @@ function displayCurrent(data){
       }, 500);
       
     } else if(currentIconId >= 600 && currentIconId <= 622) {
-      body.animate(
-        [
-          {opacity: '100'},
-          {opacity: '0'},
-          {opacity: '100'}
-        ],
-        1000
-      );
+      backgroundTransition();
       setTimeout(()=>{
         currentWeatherIcon.src = snowy;
         mainBG.add('snowyBG');
@@ -362,14 +333,7 @@ function displayCurrent(data){
       }, 500);
       
     } else if(currentIconId >= 701 && currentIconId <= 781) {
-      body.animate(
-        [
-          {opacity: '100'},
-          {opacity: '0'},
-          {opacity: '100'}
-        ],
-        1000
-      );
+      backgroundTransition();
       setTimeout(()=>{
         currentWeatherIcon.src = haze;
         mainBG.add('cloudyBG');
@@ -378,14 +342,7 @@ function displayCurrent(data){
       }, 500);
       
     } else if(currentIconId === 800) {
-      body.animate(
-        [
-          {opacity: '100'},
-          {opacity: '0'},
-          {opacity: '100'}
-        ],
-        1000
-      );
+      backgroundTransition();
       setTimeout(()=>{
         currentWeatherIcon.src = sunny;
         mainBG.add('clearBlueSkyBG');
@@ -394,14 +351,7 @@ function displayCurrent(data){
       }, 500);
       
     } else if(currentIconId >= 801 && currentIconId <= 802) {
-      body.animate(
-        [
-          {opacity: '100'},
-          {opacity: '0'},
-          {opacity: '100'}
-        ],
-        1000
-      );
+      backgroundTransition();
       setTimeout(()=>{
         currentWeatherIcon.src = partlyCloudy;
         mainBG.add('partlyCloudyBG');
@@ -410,14 +360,7 @@ function displayCurrent(data){
       }, 500);
       
     } else if(currentIconId >= 803 && currentIconId <= 804) {
-      body.animate(
-        [
-          {opacity: '100'},
-          {opacity: '0'},
-          {opacity: '100'}
-        ],
-        1000
-      );
+      backgroundTransition();
       setTimeout(()=>{
         currentWeatherIcon.src = cloudy;
         mainBG.add('cloudyBG');
@@ -427,12 +370,6 @@ function displayCurrent(data){
       
     }
 
-    try {
-      place = document.getElementById('place').innerText;
-    } catch (error) {
-      place = check;
-    };
-    
     let elements = [
       {
         "element": document.createElement('h3'),
@@ -469,6 +406,17 @@ function displayCurrent(data){
       weatherCard.appendChild(element.element);
       weatherCard.appendChild(document.createElement('br'));
     };
+};
+//function to ease the transition of the background
+function backgroundTransition(){
+  body.animate(
+    [
+      {opacity: '100'},
+      {opacity: '0'},
+      {opacity: '100'}
+    ],
+    1000
+  );
 };
 //called as soon as it's ready. Don't need an invitation to run these
 getCountryCodes();
