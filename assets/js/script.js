@@ -117,8 +117,15 @@ async function getLocation(countryChoice, cityChoice, stateChoice){
     const response = await fetch(locationUrl, { cache: "no-cache" });
     if(response.ok){
       const data = await response.json();
-      lat = `${(data[0].lat.toFixed(4))}`;
-      lon = `${(data[0].lon.toFixed(4))}`;
+
+      try {
+        lat = `${(data[0].lat.toFixed(4))}`;
+        lon = `${(data[0].lon.toFixed(4))}`;
+      } catch (error) {
+        alert('Something went wrong, try another city name.');
+        return;
+      }
+      
       displayLocation(data);
       getWeatherForecast(lat, lon);
    } else{
@@ -205,6 +212,7 @@ async function getWeatherForecast(lat, lon) {
       const response = await fetch(weatherUrl, { cache: "no-cache" });
       if(response.ok){
         const data = await response.json();
+        console.log(data);
         displayCurrent(data);
         displayWeather(data);
      } else{
@@ -216,6 +224,7 @@ async function getWeatherForecast(lat, lon) {
 };
 //clear main section and display new weather data
 function displayWeather(data){
+    const currentWeather = data.current;
     const weatherData = data.daily;
     const tableDate = document.getElementById('weatherDate');
     const tableTemp = document.getElementById('weatherTemp');
@@ -233,6 +242,9 @@ function displayWeather(data){
 
     let i=1;
     for(const day of weatherData){
+        if(day.sunset < currentWeather.dt){
+          continue;
+        }
         i++;
         let maxTemp = Math.trunc(day.temp.max);
         let minTemp = Math.trunc(day.temp.min);
