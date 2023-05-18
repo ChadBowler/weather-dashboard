@@ -1,3 +1,4 @@
+const body = document.querySelector('html');
 var savedPlaces = JSON.parse(localStorage.getItem('savedPlaces'));
 var searchForm = document.getElementById('searchForm');
 var searchList = document.getElementById('searchList');
@@ -20,16 +21,15 @@ searchList.addEventListener('click', function(event){
 
   if((event.target.tagName == 'BUTTON')){
     check = event.target.innerText;
+
     for(let i=0;i<savedPlaces.length;i++){
-      if(check == savedPlaces[i].place){
+      if(check == savedPlaces[i].place.trim()){
         lat = savedPlaces[i].lat;
         lon = savedPlaces[i].lon;
-        console.log(lat);
-        console.log(lon);
-        console.log(check);
         getWeatherForecast(lat, lon);
         displayLocation();
         break;
+      } else {
       }
     }
   }
@@ -40,7 +40,6 @@ async function getCountryCodes(){
     const response = await fetch(codesUrl);
     const data = await response.json();
     countrySelectOptions(data);
-    console.log(data);
 }
 //populate the country selection form
 function countrySelectOptions(data){
@@ -65,7 +64,6 @@ async function getStateCodes(data){
         body: JSON.stringify(data),
       });
       const result = await response.json();
-      console.log("Success:", result);
       stateSelectOptions(result);
     } catch (error) {
       console.error("Error:", error);
@@ -108,8 +106,6 @@ async function getLocation(countryChoice, cityChoice, stateChoice){
     let country = countryChoice;
     let state = stateChoice;
     let city = cityChoice;
-    console.log(country, state, city);
-    console.log(`state: ${state}`);
     if(state == ""){
       var locationUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${city},${country}&limit=5&appid=efc57a7623532e34f2cd174588ac46a8`;
     } else {
@@ -121,7 +117,6 @@ async function getLocation(countryChoice, cityChoice, stateChoice){
       const data = await response.json();
       lat = `${(data[0].lat.toFixed(4))}`;
       lon = `${(data[0].lon.toFixed(4))}`;
-      console.log('hello');
       displayLocation(data);
       getWeatherForecast(lat, lon);
    } else{
@@ -134,11 +129,24 @@ async function getLocation(countryChoice, cityChoice, stateChoice){
 //display the location in the main section
 function displayLocation(data){
     const cityState = document.getElementById('cityState');
+    let table = document.getElementById('forecast');
     let place = document.createElement('td');
     place.setAttribute('id', 'place');
-    while (cityState.hasChildNodes()) {
-      cityState.removeChild(cityState.firstChild);
-    }
+
+    table.animate(
+      [
+        {opacity: '100'},
+        {opacity: '0'},
+        {opacity: '100'}
+      ],
+      1000
+    );
+    setTimeout(()=>{
+      while (cityState.hasChildNodes()) {
+        cityState.removeChild(cityState.firstChild);
+      };
+    }, 500);
+    
       try {
         if(data[0].state == undefined){
           place.innerText = `${data[0].name}, ${data[0].country} `;
@@ -148,13 +156,15 @@ function displayLocation(data){
       } catch (error) {
         place.innerText = check;
       }
-    cityState.appendChild(place);
+      setTimeout(()=>{
+        cityState.appendChild(place);
+      }, 500);
+    
     saveSearchList(place);
 };
 //taking items from local storage and displaying them on screen
 function displaySearchList(){
   //savedPlaces was declared globally
-  console.log(`check: ${check}`);
   try {
     while(searchList.hasChildNodes()){
       searchList.removeChild(searchList.firstChild);
@@ -208,10 +218,8 @@ async function getWeatherForecast(lat, lon) {
       const response = await fetch(weatherUrl);
       if(response.ok){
         const data = await response.json();
-        console.log(data);
         displayCurrent(data);
         displayWeather(data);
-        console.log(data);
      } else{
         throw new Error(`${response.status}`);
      };
@@ -256,13 +264,17 @@ function displayWeather(data){
         weatherWindSpeed.textContent = `Wind Speed: ${day.wind_speed}mph`;
         weatherCondition.textContent = `${day.weather[0].description}`;
         weatherCondition.classList.add('align-bottom');
-        tableDate.appendChild(weatherDate);
-        tableTemp.appendChild(weatherTemp);
-        tableHumid.appendChild(weatherHumid);
-        tableWindSpeed.appendChild(weatherWindSpeed);
-        tableCondition.appendChild(weatherCondition);
-        weatherIcon.append(weatherIconImage);
-        weatherCondition.appendChild(weatherIcon);
+
+        setTimeout(()=>{
+          tableDate.appendChild(weatherDate);
+          tableTemp.appendChild(weatherTemp);
+          tableHumid.appendChild(weatherHumid);
+          tableWindSpeed.appendChild(weatherWindSpeed);
+          tableCondition.appendChild(weatherCondition);
+          weatherIcon.append(weatherIconImage);
+          weatherCondition.appendChild(weatherIcon);
+        }, 500);
+        
 
         if (weatherID >= 200 && weatherID <= 232) {
           weatherIconImage.src = thunder;
@@ -300,42 +312,119 @@ function displayCurrent(data){
     let place;
 
     mainBG.remove('clearBlueSkyBG' ,'thunderstormBG', 'cloudyBG', 'snowyBG', 'rainyBG', 'partlyCloudyBG');
-
+    //theme transition based on current weather conditions
     if (currentIconId >= 200 && currentIconId <= 232) {
-      currentWeatherIcon.src = thunder;
-      mainBG.add('thunderstormBG');
-      tableText.remove('blackText');
-      tableText.add('whiteText');
+      body.animate(
+        [
+          {opacity: '100'},
+          {opacity: '0'},
+          {opacity: '100'}
+        ],
+        1000
+      );
+      setTimeout(()=>{
+        currentWeatherIcon.src = thunder;
+        mainBG.add('thunderstormBG');
+        tableText.remove('blackText');
+        tableText.add('whiteText');
+      }, 500);
+        
     } else if(currentIconId >= 300 && currentIconId <= 532) {
-      currentWeatherIcon.src = rainy;
-      mainBG.add('rainyBG');
-      tableText.remove('blackText');
-      tableText.add('whiteText');
+      body.animate(
+        [
+          {opacity: '100'},
+          {opacity: '0'},
+          {opacity: '100'}
+        ],
+        1000
+      );
+      setTimeout(()=>{
+        currentWeatherIcon.src = rainy;
+        mainBG.add('rainyBG');
+        tableText.remove('blackText');
+        tableText.add('whiteText');
+      }, 500);
+      
     } else if(currentIconId >= 600 && currentIconId <= 622) {
-      currentWeatherIcon.src = snowy;
-      mainBG.add('snowyBG');
-      tableText.remove('blackText');
-      tableText.add('whiteText');
+      body.animate(
+        [
+          {opacity: '100'},
+          {opacity: '0'},
+          {opacity: '100'}
+        ],
+        1000
+      );
+      setTimeout(()=>{
+        currentWeatherIcon.src = snowy;
+        mainBG.add('snowyBG');
+        tableText.remove('blackText');
+        tableText.add('whiteText');
+      }, 500);
+      
     } else if(currentIconId >= 701 && currentIconId <= 781) {
-      currentWeatherIcon.src = haze;
-      mainBG.add('cloudyBG');
-      tableText.remove('blackText');
-      tableText.add('whiteText');
+      body.animate(
+        [
+          {opacity: '100'},
+          {opacity: '0'},
+          {opacity: '100'}
+        ],
+        1000
+      );
+      setTimeout(()=>{
+        currentWeatherIcon.src = haze;
+        mainBG.add('cloudyBG');
+        tableText.remove('blackText');
+        tableText.add('whiteText');
+      }, 500);
+      
     } else if(currentIconId === 800) {
-      currentWeatherIcon.src = sunny;
-      mainBG.add('clearBlueSkyBG');
-      tableText.remove('whiteText');
-      tableText.add('blackText');
+      body.animate(
+        [
+          {opacity: '100'},
+          {opacity: '0'},
+          {opacity: '100'}
+        ],
+        1000
+      );
+      setTimeout(()=>{
+        currentWeatherIcon.src = sunny;
+        mainBG.add('clearBlueSkyBG');
+        tableText.remove('whiteText');
+        tableText.add('blackText');
+      }, 500);
+      
     } else if(currentIconId >= 801 && currentIconId <= 802) {
-      currentWeatherIcon.src = partlyCloudy;
-      mainBG.add('partlyCloudyBG');
-      tableText.remove('whiteText');
-      tableText.add('blackText');
+      body.animate(
+        [
+          {opacity: '100'},
+          {opacity: '0'},
+          {opacity: '100'}
+        ],
+        1000
+      );
+      setTimeout(()=>{
+        currentWeatherIcon.src = partlyCloudy;
+        mainBG.add('partlyCloudyBG');
+        tableText.remove('whiteText');
+        tableText.add('blackText');
+      }, 500);
+      
     } else if(currentIconId >= 803 && currentIconId <= 804) {
-      currentWeatherIcon.src = cloudy;
-      mainBG.add('cloudyBG');
-      tableText.remove('blackText');
-      tableText.add('whiteText');
+      body.animate(
+        [
+          {opacity: '100'},
+          {opacity: '0'},
+          {opacity: '100'}
+        ],
+        1000
+      );
+      setTimeout(()=>{
+        currentWeatherIcon.src = cloudy;
+        mainBG.add('cloudyBG');
+        tableText.remove('blackText');
+        tableText.add('whiteText');
+      }, 500);
+      
     }
 
     try {

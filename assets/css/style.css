@@ -4,37 +4,43 @@
 
 .clearBlueSkyBG {
     background-image: url(../images/clear_blue_sky_1.png);
-    min-height: 100dvh;
+    min-height: 95dvh;
+    min-width: 95dvw;
     background-size: cover;
 }
 
 .thunderstormBG {
     background-image: url(../images/thunderstorm_bg.png);
-    min-height: 100dvh;
+    min-height: 95dvh;
+    min-width: 95dvw;
     background-size: cover;
 }
 
 .cloudyBG {
     background-image: url(../images/cloudy_bg.png);
-    min-height: 100dvh;
+    min-height: 95dvh;
+    min-width: 95dvw;
     background-size: cover;
 }
 
 .snowyBG {
     background-image: url(../images/snowy_bg.png);
-    min-height: 100dvh;
+    min-height: 95dvh;
+    min-width: 95dvw;
     background-size: cover;
 }
 
 .rainyBG {
     background-image: url(../images/Rainy_bg.png);
-    min-height: 100dvh;
+    min-height: 95dvh;
+    min-width: 95dvw;
     background-size: cover;
 }
 
 .partlyCloudyBG {
     background-image: url(../images/sunny_sky_1.png);
-    min-height: 100dvh;
+    min-height: 95dvh;
+    min-width: 95dvw;
     background-size: cover;
 }
 
@@ -113,12 +119,12 @@ input, select {
 
   .whiteText {
     color: whitesmoke !important;
-    text-shadow: 1px 1px black !important;
+    text-shadow: 2px 2px black !important;
   }
 
   .blackText {
     color: black !important;
-    text-shadow: 1px 1px whitesmoke !important;
+    text-shadow: 2px 2px whitesmoke !important;
   }
 
   #cityState {
