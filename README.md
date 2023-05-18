@@ -6,6 +6,10 @@ Weather Dashboard is a simple browser app that allows you to search by country/c
 
 * To get started, select a country from the dropdown menu, then type in the name of the city you are looking for.
 
+## Live Deployment
+
+https://chadbowler.github.io/weather-dashboard/
+
 ## Video Walkthrough
 
 https://github.com/ChadBowler/weather-dashboard/assets/127648744/8011d03a-2b46-4517-a3e9-3eaece55bed4
