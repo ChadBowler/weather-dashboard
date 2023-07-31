@@ -1,3 +1,4 @@
+
 const body = document.querySelector('html');
 var savedPlaces = JSON.parse(localStorage.getItem('savedPlaces'));
 var searchForm = document.getElementById('searchForm');
@@ -109,9 +110,9 @@ async function getLocation(countryChoice, cityChoice, stateChoice){
     let state = stateChoice;
     let city = cityChoice;
     if(state == ""){
-      var locationUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${city},${country}&limit=5&appid=efc57a7623532e34f2cd174588ac46a8`;
+      var locationUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${city},${country}&limit=5&appid=f95aeb5753d6a8bd197807e5a02ebb03`;
     } else {
-      var locationUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${city},${state},${country}&limit=5&appid=efc57a7623532e34f2cd174588ac46a8`;
+      var locationUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${city},${state},${country}&limit=5&appid=f95aeb5753d6a8bd197807e5a02ebb03`;
     }
    try {
     const response = await fetch(locationUrl, { cache: "no-cache" });
@@ -207,12 +208,11 @@ function saveSearchList(place){
 }
 //use openweathermap API to get weather data using latitude and longitude from geo API
 async function getWeatherForecast(lat, lon) {
-    var weatherUrl = `http://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=efc57a7623532e34f2cd174588ac46a8&units=imperial`;
+    var weatherUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=f95aeb5753d6a8bd197807e5a02ebb03&units=imperial`;
     try {
       const response = await fetch(weatherUrl, { cache: "no-cache" });
       if(response.ok){
         const data = await response.json();
-        console.log(data);
         displayCurrent(data);
         displayWeather(data);
      } else{

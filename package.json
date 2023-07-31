@@ -1,0 +1,15 @@
+{
+  "name": "weather-dashboard",
+  "version": "1.0.0",
+  "description": "Weather Dashboard is a simple browser app that allows you to search by country/city (and state in the US) to get the current weather and a 5-day forecast for that city.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  }
+}
